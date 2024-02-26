@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<script type="text/javascript" src="{% static 'tree/Spacer10.2.js'  %}">
+		</script>
+		<script type="text/javascript">
+			let SPACER = new Spacer();
+			onload = () => {
+				SPACER.AutoInit("datatree1");
+				SPACER.AutoInit("datatree2");
+			}
+			submitFile = () => {
+				window.event.preventDefault();
+                                let file = document.getElementsByName("fileupload")[0].files[0];
+                                let fileName = file.name;
+                                let fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
+                                let fileSize = file.size;
+                                let fileModified = file.lastModified;
+				let radio0 = document.getElementsByName("radio")[0].checked;
+				let radio1 = document.getElementsByName("radio")[1].checked;
+				let index = radio0? 0 : 1;
+                                let reader = new FileReader();
+                                reader.addEventListener('load', (evt) => {
+                                        let result = evt.target.result;
+                                        if(! fileExtension){
+                                                console.log('error - unknown file type');
+                                                return;
+                                        }
+                                        if(fileExtension == "txt"){
+                                                SPACER.TREES[index].Query('CREATE FROM TEXT ' + result);
+                                        } else if(fileExtension == "html"){
+                                                SPACER.TREES[index].Query('CREATE FROM HTML ' + result);
+                                        } else {
+                                                console.log('error - unknown file type ' + fileExtension);
+                                        }
+                                });
+                                reader.readAsText(file);
+                        }
+			downloadFile = () => {
+                                var fileName = document.getElementById("filename").value? document.getElementById("filename").value : "datatree";
+                                let radio0 = document.getElementsByName("radio")[0].checked;
+                                let radio1 = document.getElementsByName("radio")[1].checked;
+				let index = radio0? 0 : 1;
+                                let fileContent = SPACER.TREES[index].GetList();
+				let fileType = "text/html";
+                                var myFile = new Blob([fileContent], {type: fileType});
+                                window.URL = window.URL || window.webkitURL;
+                                var dlBtn = document.getElementById("download");
+                                dlBtn.setAttribute("href", window.URL.createObjectURL(myFile));
+                                dlBtn.setAttribute("download", fileName);
+                        }
+		</script>
+<style type="text/css">
+div.upload {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #cccccc;
+}
+div.upload form {
+	border: 1px dashed gray;
+}
+div.upload a {
+	text-decoration: none;
+	background-color: rgb(253,253,253);
+	color: #111111;
+	border: 1px solid gray;
+	font-size: .8rem;
+	font-family: arial;
+	padding: 3px;
+}
+div.tree {
+	display: flex;
+}
+#datatree1 {
+	width: 50%;
+}
+#datatree2 {
+	width: 50%;
+}
+</style>
+	</head>
+	<body>
+
+	<div style="background: url('{% static 'tree/mathbackground.jpe' %}') repeat-x center gray; padding: 10px; border: 1px solid navy; border-image: none;overflow: auto;text-align:center;" align="left">
+		<img style="width: auto; height: 50px; float: left;z-index:10;" src="{% static 'tree/papers_transparent_background.gif' %}">
+
+		<label id="title" style="color: white; font-family: Arial Black; font-size: xx-large; font-width: bold;">SPACER</label>
+	</div>
+
+	<div class="upload">
+                <form method="POST" action="#" onsubmit="return submitFile();">
+                        <div>
+                                <input type="radio" name="radio" value="left" checked />
+                                <label>left tree</label>
+                                <input type="radio" name="radio" value="right" />
+                                <label>right tree</label>
+                                <input type="file" name="fileupload"/>
+                                <input type="submit" value="UPLOAD"/>
+                                <a href="" id="download" onclick="return downloadFile();">DOWNLOAD</a>
+                                <input type="text" id="filename" placeholder="filename w/o extension"/>
+                        </div>
+                </form>
+        </div>
+	<div class="tree">
+
+				<div id="datatree1" type="html" src="{% static 'tree/instructions.html' %}" toolbar="expand,collapse,search_horizontal,next,previous,reset,edit,save,text,load">
+				</div>
+				<div id="datatree2" type="html" src="{% static 'tree/instructions.html' %}" toolbar="expand,collapse,search_horizontal,next,previous,reset,edit,save,text,load">
+				</div>
+	</div>
+
+	</body>
+</html>

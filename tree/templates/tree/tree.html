@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<script type="text/javascript" src="{% static 'tree/Spacer10.2.js'  %}">
+		</script>
+		<script type="text/javascript">
+			let SPACER = new Spacer();
+			onload = () => {
+				SPACER.AutoInit("datatree");
+			}
+			submitForm = (evt) => {
+				if(! evt){
+					evt = window.event;
+				}
+				evt.preventDefault();
+				let value = null;
+				if(evt.submitter){
+					value = evt.submitter.value;
+				} else if(evt.activeElement){
+					value = evt.activeElement.value;
+				} else {
+					console.log("error - could not get submitter of event");
+					return;
+				}
+				if(value == "UPLOAD"){
+					submitFile();
+				} else if(value == "ENCODE IMAGE"){
+					submitImage();
+				} else {
+					console.log("error - unknown request submitted");
+				}
+			}
+			submitFile = () => {
+				let file = document.getElementsByName("fileupload")[0].files[0];
+				let fileName = file.name;
+				let fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
+				let fileSize = file.size;
+				let fileModified = file.lastModified;
+				let reader = new FileReader();
+				reader.addEventListener('load', (evt) => {
+					let result = evt.target.result;
+					if(! fileExtension){
+						console.log('error - unknown file type');
+						return;
+					}
+					if(fileExtension == "txt"){
+						SPACER.TREE.Query('CREATE FROM TEXT ' + result);
+					} else if(fileExtension == "html"){
+						SPACER.TREE.Query('CREATE FROM HTML ' + result);
+					} else {
+						console.log('error - unknown file type ' + fileExtension);
+					}
+				});
+				reader.readAsText(file);
+			}
+			submitImage = () => {
+				let url = "http://{{ url }}/encode/";
+				let file = document.getElementsByName("imageupload")[0].files[0];
+				let fileName = file.name;
+				let fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
+				let fileSize = file.size;
+				let fileModified = file.lastModified;
+				let formdata = new FormData();
+				formdata.append("image", file);
+				fetch(url, {
+					method: "POST",
+					body: formdata
+							}).then(response => response.text())
+								.then(text => document.getElementById('embedding').value = text)
+								.catch(err => console.log('error ' + err));
+			}
+			downloadFile = () => {
+				var fileName = document.getElementById("filename").value? document.getElementById("filename").value : "datatree";
+				let radio0 = document.getElementsByName("radio")[0].checked;
+				let radio1 = document.getElementsByName("radio")[1].checked;
+				let fileType = radio0? "text/plain" : radio1? "text/html" : "text/plain";
+				let fileContent = radio0? SPACER.TREE.GetTextForPrint() : radio1? SPACER.TREE.GetList() : SPACER.TREE.GetTextForPrint();
+				var myFile = new Blob([fileContent], {type: fileType});
+				window.URL = window.URL || window.webkitURL;
+				var dlBtn = document.getElementById("download");
+				dlBtn.setAttribute("href", window.URL.createObjectURL(myFile));
+				dlBtn.setAttribute("download", fileName);
+			}
+			_downloadFile = () => {
+				let url = "http://13.59.63.105/download/";
+				let file = document.getElementsByName("fileupload")[0].files[0];
+				let fileName = file.name;
+				let fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
+				let fileSize = file.size;
+				let fileModified = file.lastModified;
+				let formdata = new FormData();
+				formdata.append("upload", file);
+				fetch(url, {
+					method: "POST",
+					body: formdata
+							}).then(response => response.text())
+								.then(text => console.log(text))
+								.catch(err => console.log('error ' + err));
+			}
+		</script>
+<style type="text/css">
+	div.upload {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: #cccccc;
+	}
+	div.upload form {
+		display: flex;
+		flex-direction: column;
+		align-items: left;
+		justify-content: left;
+	}
+	div.upload form input {
+		background-color: white;
+	}
+	div.upload a {
+		text-decoration: none;
+		color: #111111;
+		background-color: rgb(253,253,253);
+		border: 1px solid black;
+		padding: 3px;
+		font-size: .9rem;
+		font-family: arial;
+	}
+</style>
+	</head>
+	<body>
+
+	<div class="header" style="background: url('{% static 'tree/mathbackground.jpe' %}') repeat-x center gray; padding: 10px; border: 1px solid navy; border-image: none;overflow: auto;text-align:center;" align="left">
+		<img style="width: auto; height: 50px; float: left;z-index:10;" src="{% static 'tree/papers_transparent_background.gif' %}">
+
+		<label id="title" style="color: white; font-family: Arial Black; font-size: xx-large; font-width: bold;">SPACER</label>
+	</div>
+
+	<div class="upload">
+		<form method="POST" action="#" onsubmit="return submitForm();">
+			<div>
+				<input type="file" name="fileupload"/>
+				<input type="submit" value="UPLOAD"/>
+			</div>
+			<div>
+				<input type="radio" name="radio" value="text"/>
+				<label>text</label>
+				<input type="radio" name="radio" value="html" checked />
+				<label>html</label>
+				<input type="text" id="filename" placeholder="file name"/>
+				<a href="" id="download" onclick="return downloadFile();">DOWNLOAD</a>
+			</div>
+			<div>
+				<input type="file" name="imageupload"/>
+				<input type="submit" value="ENCODE IMAGE"/>
+				<input type="text" id="embedding" placeholder="html appears here"/>
+			</div>
+		</form>
+	</div>
+
+	<div id="datatree" type="html" src="{% static 'tree/instructions.html' %}" toolbar="expand,collapse,search_horizontal,next,previous,reset,edit,save,text,load,publish,number,replace,alphabetize">
+	</div>
+
+	</body>
+</html>
