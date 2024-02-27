@@ -16,9 +16,15 @@ Cd into the directory containing Dockerfile, then run the following lines.
 docker build -t spacer -f Dockerfile .
 
 docker run --name spacer -p 8000:8000 spacer
+
+(if container exists)
+
+docker rm container-id
+
+(then repeat run command)
 ```
 
-Open your browser to localhost:8000.
+Open your browser to 127.0.0.1:8000.
 
 To change the url that the program runs on, change the configuration.py file in the spacerwrapper subdirectory.
 
