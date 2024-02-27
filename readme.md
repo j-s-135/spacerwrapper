@@ -10,6 +10,7 @@ Start the docker engine.
 - On Mac, find it in the applications directory.
 - On Linux, type service docker start.
 
+Obtain root privileges.
 Cd into the directory containing Dockerfile, then run the following lines.
 
 ```
