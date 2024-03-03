@@ -16,11 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from welcome import views as welcome
-from tree import views as tree
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic.base import TemplateView
+from welcome import views as welcome
+from tree import views as tree
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,5 +28,8 @@ urlpatterns = [
     path('welcome/', welcome.welcome, name='welcome'),
     path('tree/', tree.tree, name='tree'),
     path('trees/', tree.trees, name='trees'),
-    path('encode/', tree.encode, name='encode')
+    path('encode/', tree.encode, name='encode'),
+    path('robots.txt/', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    path('sitemap/', TemplateView.as_view(template_name='sitemap.xml', content_type='text/xml')),
+    path('sitemap.xml/', TemplateView.as_view(template_name='sitemap.xml', content_type='text/xml')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

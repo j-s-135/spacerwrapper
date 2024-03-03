@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /spacer/
+Disallow: /embed/
+Disallow: /tree/
+Disallow: /static/
+Sitemap: /sitemap.xml
