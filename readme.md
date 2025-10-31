@@ -8,7 +8,7 @@ For Linux or Mac.
 
 # VIRTUAL ENVIRONMENT
 
-Install
+### Install
 
 ```
 python3 -m venv venv
@@ -18,14 +18,16 @@ deactivate
 ```
 
 
-Run
+### Run
 
 ```
 source venv/bin/activate
 python3 manage.py runserver
 ```
 
-Log out
+Open your browser to 127.0.0.1:8000.
+
+### Log out
 
 ```
 deactivate
