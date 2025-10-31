@@ -6,6 +6,33 @@
 
 For Linux or Mac.
 
+# VIRTUAL ENVIRONMENT
+
+Install
+
+```
+python3 -m venv venv
+source venv/bin/activate
+pip3 install -r requirements.txt
+deactivate
+```
+
+
+Run
+
+```
+source venv/bin/activate
+python3 manage.py runserver
+```
+
+Log out
+
+```
+deactivate
+```
+
+# DOCKER
+
 Start the docker engine.
 - On Mac, find it in the applications directory.
 - On Linux, type service docker start.
